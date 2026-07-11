@@ -1,7 +1,7 @@
 ---
 name: Feature template
 about: 프로젝트에 대해 제안할 때 사용하는 템플릿입니다
-title: "개발 내역"
+title:
 labels:
 assignees:
 

@@ -5,66 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>마이페이지 - 취업 지원 서비스</title>
 <link rel="stylesheet" href="style.css">
-<style>
-  .profile-head {
-    display: flex;
-    align-items: center;
-    gap: 14px;
-    margin-bottom: 6px;
-  }
-  .avatar {
-    width: 56px;
-    height: 56px;
-    border-radius: 50%;
-    background: linear-gradient(135deg, #6ea3ff, var(--primary));
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: #fff;
-    font-weight: 700;
-    font-size: 20px;
-  }
-  .profile-email { font-size: 13px; color: var(--text-sub); }
-  .info-row {
-    display: flex;
-    justify-content: space-between;
-    padding: 10px 0;
-    border-bottom: 1px solid var(--border);
-    font-size: 14px;
-  }
-  .info-row:last-child { border-bottom: none; }
-  .info-row .label { color: var(--text-sub); }
-
-  .chip-list { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 14px; }
-  .chip {
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    padding: 7px 12px;
-    border-radius: 999px;
-    border: 1px solid var(--border);
-    font-size: 13px;
-    cursor: pointer;
-    user-select: none;
-  }
-  .chip.selected {
-    background: #eaf1ff;
-    border-color: var(--primary);
-    color: var(--primary);
-    font-weight: 600;
-  }
-
-  .portfolio-summary {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 12px;
-  }
-  .portfolio-summary .label { font-size: 13px; color: var(--text-sub); }
-  .portfolio-summary .name { font-weight: 600; font-size: 14px; }
-
-  .danger-zone { border: 1px solid #f5c6c0; }
-</style>
+<link rel="stylesheet" href="userInfo.css">
 </head>
 <body>
 
@@ -158,87 +99,7 @@
 </div>
 
 <script src="mock-data.js"></script>
-<script>
-  document.getElementById("avatarInitial").textContent = MOCK_MEMBER.nickname.charAt(0).toUpperCase();
-  document.getElementById("userNickname").textContent = MOCK_MEMBER.nickname;
-  document.getElementById("userEmail").textContent = MOCK_MEMBER.email;
-
-  // job_id FK -> 최근 관심 등록한 공고 표시
-  const recentJob = MOCK_JOBS.find((j) => j.job_id === MOCK_MEMBER.job_id);
-  if (recentJob) {
-    document.getElementById("recentJobTitle").textContent = `${recentJob.company_name} - ${recentJob.post_title}`;
-  }
-
-  // portfolio_id FK -> 포트폴리오 요약
-  const portfolio = loadPortfolio();
-  document.getElementById("portfolioName").textContent = `${portfolio.projectTitle} (${portfolio.displayName})`;
-
-  // 희망 조건 로드
-  const prefs = loadMemberPrefs();
-  let selectedJobParts = new Set(prefs.user_job_part);
-  let selectedRegions = new Set(prefs.user_region);
-
-  const jobPartList = document.getElementById("jobPartList");
-  const regionList = document.getElementById("regionList");
-
-  function renderChips(container, options, selectedSet) {
-    container.innerHTML = "";
-    options.forEach((opt) => {
-      const chip = document.createElement("div");
-      chip.className = "chip" + (selectedSet.has(opt) ? " selected" : "");
-      chip.textContent = opt;
-      chip.addEventListener("click", () => {
-        if (selectedSet.has(opt)) selectedSet.delete(opt);
-        else selectedSet.add(opt);
-        renderChips(container, options, selectedSet);
-      });
-      container.appendChild(chip);
-    });
-  }
-  renderChips(jobPartList, POSITIONS, selectedJobParts);
-  renderChips(regionList, REGION_OPTIONS, selectedRegions);
-
-  function fillSelect(selectEl, options, currentValue) {
-    selectEl.innerHTML = "";
-    options.forEach((opt) => {
-      const el = document.createElement("option");
-      el.value = opt;
-      el.textContent = opt;
-      if (opt === currentValue) el.selected = true;
-      selectEl.appendChild(el);
-    });
-  }
-  fillSelect(document.getElementById("careerSelect"), CAREER_OPTIONS, prefs.user_personal_history);
-  fillSelect(document.getElementById("eduSelect"), EDU_OPTIONS, prefs.user_edu_require);
-  fillSelect(document.getElementById("empTypeSelect"), EMP_TYPE_OPTIONS, prefs.user_emp_type);
-  fillSelect(document.getElementById("paySelect"), PAY_OPTIONS, prefs.user_pay);
-
-  document.getElementById("savePrefsBtn").addEventListener("click", () => {
-    const newPrefs = {
-      user_job_part: Array.from(selectedJobParts),
-      user_region: Array.from(selectedRegions),
-      user_personal_history: document.getElementById("careerSelect").value,
-      user_edu_require: document.getElementById("eduSelect").value,
-      user_emp_type: document.getElementById("empTypeSelect").value,
-      user_pay: document.getElementById("paySelect").value,
-    };
-    saveMemberPrefs(newPrefs);
-    showToast("희망 조건이 저장되었습니다.");
-  });
-
-  document.getElementById("logoutBtn").addEventListener("click", () => {
-    showToast("로그아웃되었습니다.");
-  });
-
-  document.getElementById("withdrawBtn").addEventListener("click", () => {
-    if (confirm("정말 탈퇴하시겠습니까? 모든 데이터가 삭제되며 복구할 수 없습니다.")) {
-      localStorage.removeItem("mvp_portfolio");
-      localStorage.removeItem("mvp_member_prefs");
-      localStorage.removeItem("mvp_apply_status");
-      showToast("회원 탈퇴가 완료되었습니다.");
-    }
-  });
-</script>
+<script src="userInfo.js"></script>
 
 </body>
 </html>

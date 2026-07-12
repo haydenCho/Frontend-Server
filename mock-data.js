@@ -180,6 +180,17 @@ function saveMemberPrefs(prefs) {
   localStorage.setItem("mvp_member_prefs", JSON.stringify(prefs));
 }
 
+// members 계정 정보 (email, password, nickname) - 회원가입 화면에서 사용
+function loadMemberAccount() {
+  const saved = localStorage.getItem("mvp_member_account");
+  if (saved) return JSON.parse(saved);
+  const { email, password, nickname } = MOCK_MEMBER;
+  return { email, password, nickname };
+}
+function saveMemberAccount(account) {
+  localStorage.setItem("mvp_member_account", JSON.stringify(account));
+}
+
 // job.apply 상태는 post_id 기준으로 저장 (재수집되어도 상태 유지)
 function loadApplyStatus() {
   const saved = localStorage.getItem("mvp_apply_status");

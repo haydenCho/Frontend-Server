@@ -1,7 +1,8 @@
 {
   "permissions": {
     "allow": [
-      "Bash(bash -n setup_nginx.sh)"
+      "Bash(bash -n setup_nginx.sh)",
+      "Bash(find \"//wsl.localhost/Ubuntu/home/solcho/Frontend-Server/fastapi_app\" -type f | head -50)"
     ]
   }
 }

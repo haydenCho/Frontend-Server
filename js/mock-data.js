@@ -140,13 +140,17 @@ const MOCK_MEMBER = {
   user_pay: "4,000~5,000만원",
 };
 
+// CNAME 제공 서비스로부터 받을 도메인 네임 (서비스 제작 중이라 임시 목데이터).
+// 완성되면 API 응답값으로 교체한다.
+const MOCK_CNAME_DOMAIN = "example.com";
+
 // ---- 포트폴리오 초기 목업 데이터 ----
 // portfolio.image_path, portfolio.html_path: 실 서버에서는 업로드된 파일이
 // /var/www/html/assets/{nickname}/ 아래 저장되고, DB에는 그 경로 문자열만 저장된다.
 const MOCK_PORTFOLIO = {
   nickname: "doyeon_kim",
   cname: "portfolio",
-  portfolio_url: "https://example.com/doyeon_kim",
+  portfolio_url: "pofile.greatsounds.me",
   image_path: null,
   html_path: null,
 };

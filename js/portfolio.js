@@ -23,17 +23,12 @@ function readFileAsText(file) {
   });
 }
 
-// portfolio_url에서 도메인 네임을 뽑아 "{cname}.{도메인}" 형태의 접속 주소를 만든다.
-// 예) cname=portfolio, portfolio_url=https://example.com/... -> portfolio.example.com
+// CNAME 레코드의 값: "{cname}.{도메인 네임}".
+// 도메인 네임은 CNAME 제공 서비스에서 받을 값이라 지금은 목데이터(MOCK_CNAME_DOMAIN)를 쓴다.
+// 예) cname=portfolio -> portfolio.example.com
 function buildCnameFullDomain() {
-  if (!portfolio.cname || !portfolio.portfolio_url) return "";
-  try {
-    const host = new URL(portfolio.portfolio_url).hostname;
-    const domain = host.split(".").slice(-2).join(".");
-    return `${portfolio.cname}.${domain}`;
-  } catch {
-    return "";
-  }
+  if (!portfolio.cname) return "";
+  return `${portfolio.cname}.${MOCK_CNAME_DOMAIN}`;
 }
 
 function renderView() {
@@ -41,7 +36,10 @@ function renderView() {
   document.getElementById("viewNickname").textContent = portfolio.nickname;
   const urlEl = document.getElementById("viewPortfolioUrl");
   urlEl.textContent = portfolio.portfolio_url;
-  urlEl.href = portfolio.portfolio_url || "#";
+  // 스킴 없이 입력된 URL(pofile.greatsounds.me 등)이 상대경로로 처리되지 않게 보정
+  urlEl.href = portfolio.portfolio_url
+    ? (/^https?:\/\//.test(portfolio.portfolio_url) ? portfolio.portfolio_url : `https://${portfolio.portfolio_url}`)
+    : "#";
   document.getElementById("viewCname").textContent = portfolio.cname;
   document.getElementById("viewCnameFull").textContent = buildCnameFullDomain();
 

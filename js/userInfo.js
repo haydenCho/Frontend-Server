@@ -2,13 +2,13 @@ document.getElementById("avatarInitial").textContent = MOCK_MEMBER.nickname.char
 document.getElementById("userNickname").textContent = MOCK_MEMBER.nickname;
 document.getElementById("userEmail").textContent = MOCK_MEMBER.email;
 
-// job_id FK -> 최근 관심 등록한 공고 표시
-const recentJob = MOCK_JOBS.find((j) => j.job_id === MOCK_MEMBER.job_id);
+// member_job_apply 기준 최근 관심/지원 등록한 공고 표시
+const recentJob = getRecentInterestedJob();
 if (recentJob) {
   document.getElementById("recentJobTitle").textContent = `${recentJob.company_name} - ${recentJob.post_title}`;
 }
 
-// portfolio_id FK -> 포트폴리오 요약
+// members 포트폴리오 컬럼 -> 포트폴리오 요약
 const portfolio = loadPortfolio();
 document.getElementById("portfolioName").textContent = `${portfolio.nickname} (${portfolio.portfolio_url})`;
 
@@ -31,8 +31,6 @@ function fillSelect(selectEl, options, currentValue) {
 jobPartInput.value = prefs.user_job_part || "";
 fillSelect(regionSelect, REGION_OPTIONS, prefs.user_region);
 fillSelect(document.getElementById("careerSelect"), CAREER_OPTIONS, prefs.user_personal_history);
-fillSelect(document.getElementById("eduSelect"), EDU_OPTIONS, prefs.user_edu_require);
-fillSelect(document.getElementById("empTypeSelect"), EMP_TYPE_OPTIONS, prefs.user_emp_type);
 fillSelect(document.getElementById("paySelect"), PAY_OPTIONS, prefs.user_pay);
 
 document.getElementById("savePrefsBtn").addEventListener("click", () => {
@@ -45,8 +43,6 @@ document.getElementById("savePrefsBtn").addEventListener("click", () => {
     user_job_part: jobPart,
     user_region: regionSelect.value,
     user_personal_history: document.getElementById("careerSelect").value,
-    user_edu_require: document.getElementById("eduSelect").value,
-    user_emp_type: document.getElementById("empTypeSelect").value,
     user_pay: document.getElementById("paySelect").value,
   };
   saveMemberPrefs(newPrefs);
@@ -62,9 +58,9 @@ document.getElementById("logoutBtn").addEventListener("click", () => {
 
 document.getElementById("withdrawBtn").addEventListener("click", () => {
   if (confirm("정말 탈퇴하시겠습니까? 모든 데이터가 삭제되며 복구할 수 없습니다.")) {
-    localStorage.removeItem("mvp_portfolio");
+    localStorage.removeItem("mvp_member_portfolio");
     localStorage.removeItem("mvp_member_prefs");
-    localStorage.removeItem("mvp_apply_status");
+    localStorage.removeItem("mvp_member_job_apply");
     showToast("회원 탈퇴가 완료되었습니다.");
   }
 });

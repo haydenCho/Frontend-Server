@@ -45,7 +45,7 @@ function renderView() {
 
   const viewImage = document.getElementById("viewImage");
   const viewImageEmpty = document.getElementById("viewImageEmpty");
-  const imageData = getAsset(portfolio.image_path);
+  const imageData = getAsset(portfolio.portfolio_img);
   if (imageData) {
     viewImage.src = imageData;
     viewImage.style.display = "block";
@@ -58,7 +58,7 @@ function renderView() {
 
   const viewHtmlPreview = document.getElementById("viewHtmlPreview");
   const viewHtmlEmpty = document.getElementById("viewHtmlEmpty");
-  const htmlData = getAsset(portfolio.html_path);
+  const htmlData = getAsset(portfolio.portfolio_file);
   if (htmlData) {
     viewHtmlPreview.srcdoc = htmlData;
     viewHtmlPreview.style.display = "block";
@@ -81,7 +81,7 @@ function fillEditForm() {
   document.getElementById("inputHtml").value = "";
 
   const imagePreview = document.getElementById("imagePreview");
-  const existingImage = getAsset(portfolio.image_path);
+  const existingImage = getAsset(portfolio.portfolio_img);
   if (existingImage) {
     imagePreview.src = existingImage;
     imagePreview.style.display = "block";
@@ -90,8 +90,8 @@ function fillEditForm() {
     imagePreview.style.display = "none";
   }
 
-  document.getElementById("htmlCurrentName").textContent = portfolio.html_path
-    ? `현재 파일: ${portfolio.html_path.split("/").pop()}`
+  document.getElementById("htmlCurrentName").textContent = portfolio.portfolio_file
+    ? `현재 파일: ${portfolio.portfolio_file.split("/").pop()}`
     : "등록된 HTML 파일이 없습니다.";
 }
 
@@ -120,7 +120,7 @@ document.getElementById("inputHtml").addEventListener("change", (e) => {
   pendingHtmlFile = e.target.files[0] || null;
   document.getElementById("htmlCurrentName").textContent = pendingHtmlFile
     ? `선택된 파일: ${pendingHtmlFile.name}`
-    : (portfolio.html_path ? `현재 파일: ${portfolio.html_path.split("/").pop()}` : "등록된 HTML 파일이 없습니다.");
+    : (portfolio.portfolio_file ? `현재 파일: ${portfolio.portfolio_file.split("/").pop()}` : "등록된 HTML 파일이 없습니다.");
 });
 
 document.getElementById("saveBtn").addEventListener("click", async () => {
@@ -138,12 +138,12 @@ document.getElementById("saveBtn").addEventListener("click", async () => {
   if (pendingImageFile) {
     const path = assetPathFor(nickname, pendingImageFile.name);
     saveAsset(path, await readFileAsDataUrl(pendingImageFile));
-    updated.image_path = path;
+    updated.portfolio_img = path;
   }
   if (pendingHtmlFile) {
     const path = assetPathFor(nickname, pendingHtmlFile.name);
     saveAsset(path, await readFileAsText(pendingHtmlFile));
-    updated.html_path = path;
+    updated.portfolio_file = path;
   }
 
   portfolio = updated;

@@ -9,7 +9,6 @@ const failBanner = document.getElementById("failBanner");
 
 // 전체 수집 결과 (post_id UNIQUE 제약을 흉내내기 위해 배열로 관리)
 let allJobs = [...MOCK_JOBS];
-let applyStatusMap = loadApplyStatus();
 let collectStep = 0;
 
 // 출처(source) 필터 옵션 - DB값은 영문(JOBKOREA/SARAMIN), 화면은 한글 표기
@@ -49,13 +48,11 @@ function daysLeft(deadline) {
 }
 
 function getApplyState(job) {
-  return applyStatusMap[job.post_id] || job.apply;
+  return getApplyStatus(job.job_id);
 }
 
-function toggleApply(postId) {
-  const current = applyStatusMap[postId] || allJobs.find((j) => j.post_id === postId).apply;
-  applyStatusMap[postId] = current === "APPLY" ? "PENDING" : "APPLY";
-  saveApplyStatus(applyStatusMap);
+function toggleApply(jobId) {
+  toggleApplyStatus(jobId);
   renderJobs();
 }
 
@@ -86,15 +83,13 @@ function renderJobs() {
     card.innerHTML = `
       <div class="job-main">
         <div class="job-top">
-          <span class="badge ${job.source === "JOBKOREA" ? "badge-jobkorea" : "badge-saramin"}">${SOURCE_LABELS[job.source]}</span>
+          <span class="badge badge-${job.source.toLowerCase()}">${SOURCE_LABELS[job.source]}</span>
           <span class="job-company">${job.company_name}</span>
         </div>
         <div class="job-title">${job.post_title}</div>
         <div class="job-meta">
           <span>📍 ${job.region}</span>
           <span>🧑‍💻 ${job.personal_history}</span>
-          <span>🎓 ${job.edu_require}</span>
-          <span>🏢 ${job.emp_type}</span>
           <span>💰 ${job.pay}</span>
           <span class="${left <= 7 ? "deadline-soon" : ""}">⏰ 마감 ${job.end_at}${left >= 0 ? ` (D-${left})` : ""}</span>
           <span>🏷 ${job.job_part}</span>
@@ -102,7 +97,7 @@ function renderJobs() {
       </div>
       <div class="job-actions">
         <button class="btn btn-sm" onclick="window.open('${job.job_url}', '_blank')">원문 보기 ↗</button>
-        <button class="btn btn-sm ${applyState === "APPLY" ? "" : "btn-primary"}" onclick="toggleApply('${job.post_id}')">${applyState === "APPLY" ? "지원완료" : "지원하기"}</button>
+        <button class="btn btn-sm ${applyState === "APPLY" ? "" : "btn-primary"}" onclick="toggleApply(${job.job_id})">${applyState === "APPLY" ? "지원완료" : "지원하기"}</button>
       </div>
     `;
     jobList.appendChild(card);

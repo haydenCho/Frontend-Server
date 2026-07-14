@@ -96,26 +96,28 @@ regionFilter.addEventListener("change", loadJobs);
   const me = await requireLogin();
   if (!me) return;
 
-  // 직무 필터 옵션 - 회원의 희망 직무(user_job_part)를 우선 표시
+  // 직무 필터 옵션 - 회원의 희망 직무(user_job_part, 복수 선택)를 우선 표시
+  const myJobParts = parsePrefList(me.user_job_part);
   POSITIONS.forEach((p) => {
     const opt = document.createElement("option");
     opt.value = p;
-    opt.textContent = p + (p === me.user_job_part ? " (희망 직무)" : "");
+    opt.textContent = p + (myJobParts.includes(p) ? " (희망 직무)" : "");
     jobPartFilter.appendChild(opt);
   });
-  if (me.user_job_part) {
-    jobPartFilter.value = me.user_job_part;
+  if (myJobParts.length) {
+    jobPartFilter.value = myJobParts[0];
   }
 
-  // 지역 필터 옵션 - 회원의 희망 지역(user_region) 우선 표시
+  // 지역 필터 옵션 - 회원의 희망 지역(user_region, 복수 선택) 우선 표시
+  const myRegions = parsePrefList(me.user_region);
   REGION_OPTIONS.forEach((r) => {
     const opt = document.createElement("option");
     opt.value = r;
-    opt.textContent = r + (r === me.user_region ? " (희망 지역)" : "");
+    opt.textContent = r + (myRegions.includes(r) ? " (희망 지역)" : "");
     regionFilter.appendChild(opt);
   });
-  if (me.user_region) {
-    regionFilter.value = me.user_region;
+  if (myRegions.length) {
+    regionFilter.value = myRegions[0];
   }
 
   await loadJobs();

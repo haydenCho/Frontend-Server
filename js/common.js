@@ -25,6 +25,29 @@ const SOURCE_LABELS = { SARAMIN: "사람인", JOBKOREA: "잡코리아" };
 // 완성되면 API 응답값으로 교체한다.
 const MOCK_CNAME_DOMAIN = "example.com";
 
+// 복수 선택 값 직렬화 - DB 컬럼(user_job_part, user_region)이 문자열이므로
+// 쉼표 구분 문자열로 저장하고, 화면에서는 배열로 변환해 사용한다.
+function parsePrefList(value) {
+  if (Array.isArray(value)) return value;
+  return value ? value.split(",").map((s) => s.trim()).filter(Boolean) : [];
+}
+
+// 복수 선택 Chip 렌더링 - 클릭 시 선택/해제 토글
+function renderChips(container, options, selectedSet) {
+  container.innerHTML = "";
+  options.forEach((opt) => {
+    const chip = document.createElement("div");
+    chip.className = "chip" + (selectedSet.has(opt) ? " selected" : "");
+    chip.textContent = opt;
+    chip.addEventListener("click", () => {
+      if (selectedSet.has(opt)) selectedSet.delete(opt);
+      else selectedSet.add(opt);
+      renderChips(container, options, selectedSet);
+    });
+    container.appendChild(chip);
+  });
+}
+
 function showToast(message) {
   let toast = document.querySelector(".toast");
   if (!toast) {

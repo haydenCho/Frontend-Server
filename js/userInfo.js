@@ -34,31 +34,34 @@ function fillSelect(selectEl, options, currentValue) {
     ? `${me.nickname} (${me.portfolio_url || me.cname})`
     : "등록된 포트폴리오가 없습니다.";
 
-  // 희망 조건 폼 채우기
-  const jobPartInput = document.getElementById("jobPartInput");
-  const regionSelect = document.getElementById("regionSelect");
-  jobPartInput.value = me.user_job_part || "";
-  fillSelect(regionSelect, REGION_OPTIONS, me.user_region);
-  fillSelect(document.getElementById("careerSelect"), CAREER_OPTIONS, me.user_personal_history);
-  fillSelect(document.getElementById("paySelect"), PAY_OPTIONS, me.user_pay);
+  // 희망 조건 폼 채우기 - 직무/지역은 복수 선택 Chip, 저장된 값(쉼표 구분)으로 초기 선택
+  const selectedUserJobParts = new Set(parsePrefList(me.user_job_part));
+  const selectedUserRegions = new Set(parsePrefList(me.user_region));
+  // 과거 텍스트 입력으로 저장된 직무 값(POSITIONS에 없는 값)도 Chip으로
+  // 표시해 선택 해제 전까지 유실되지 않도록 옵션에 포함한다.
+  const jobPartOptions = [...new Set([...POSITIONS, ...selectedUserJobParts])];
+  renderChips(document.getElementById("userJobPartList"), jobPartOptions, selectedUserJobParts);
+  renderChips(document.getElementById("userRegionList"), REGION_OPTIONS, selectedUserRegions);
+  fillSelect(document.getElementById("userCareerSelect"), CAREER_OPTIONS, me.user_personal_history);
+  fillSelect(document.getElementById("userPaySelect"), PAY_OPTIONS, me.user_pay);
 
   document.getElementById("savePrefsBtn").addEventListener("click", async () => {
-    const jobPart = jobPartInput.value.trim();
-    if (!jobPart) {
-      showToast("희망 직무를 입력해주세요.");
+    if (selectedUserJobParts.size === 0) {
+      showToast("희망 직무를 1개 이상 선택해주세요.");
       return;
     }
     try {
       await apiRequest("/users/me/preferences", {
         method: "PUT",
         body: {
-          user_job_part: jobPart,
-          user_region: regionSelect.value,
-          user_personal_history: document.getElementById("careerSelect").value,
-          user_pay: document.getElementById("paySelect").value,
+          user_job_part: Array.from(selectedUserJobParts).join(","),
+          user_region: Array.from(selectedUserRegions).join(","),
+          user_personal_history: document.getElementById("userCareerSelect").value,
+          user_pay: document.getElementById("userPaySelect").value,
         },
       });
-      showToast("희망 조건이 저장되었습니다.");
+      alert("정보가 수정되었습니다. 크롤링을 다시 실행합니다.");
+      runCrawler(); // 변경된 희망 조건 기준으로 크롤링 재실행
     } catch (err) {
       showToast(err.message);
     }

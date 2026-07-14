@@ -1,5 +1,8 @@
-const jobPartInput = document.getElementById("jobPartInput");
-const regionSelect = document.getElementById("regionSelect");
+// 희망 직무 / 희망 지역 - 복수 선택 Chip
+const selectedJobParts = new Set();
+const selectedRegions = new Set();
+renderChips(document.getElementById("jobPartList"), POSITIONS, selectedJobParts);
+renderChips(document.getElementById("regionList"), REGION_OPTIONS, selectedRegions);
 
 function fillSelect(selectEl, options) {
   selectEl.innerHTML = "";
@@ -10,7 +13,6 @@ function fillSelect(selectEl, options) {
     selectEl.appendChild(el);
   });
 }
-fillSelect(regionSelect, REGION_OPTIONS);
 fillSelect(document.getElementById("careerSelect"), CAREER_OPTIONS);
 fillSelect(document.getElementById("paySelect"), PAY_OPTIONS);
 
@@ -34,9 +36,12 @@ document.getElementById("signupBtn").addEventListener("click", async () => {
     showToast("닉네임은 영문/숫자/_ 2~20자로 입력해주세요.");
     return;
   }
-  const jobPart = jobPartInput.value.trim();
-  if (!jobPart) {
-    showToast("희망 직무를 입력해주세요.");
+  if (selectedJobParts.size === 0) {
+    showToast("희망 직무를 1개 이상 선택해주세요.");
+    return;
+  }
+  if (selectedRegions.size === 0) {
+    showToast("희망 지역을 1개 이상 선택해주세요.");
     return;
   }
 
@@ -47,8 +52,8 @@ document.getElementById("signupBtn").addEventListener("click", async () => {
         email,
         password,
         nickname,
-        user_job_part: jobPart,
-        user_region: regionSelect.value,
+        user_job_part: Array.from(selectedJobParts).join(","),
+        user_region: Array.from(selectedRegions).join(","),
         user_personal_history: document.getElementById("careerSelect").value,
         user_pay: document.getElementById("paySelect").value,
       },

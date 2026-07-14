@@ -6,8 +6,8 @@ function daysLeft(deadline) {
 // 희망 직무/지역과 일치하는 공고를 우선순위로, 그 안에서는 마감일이 가까운 순으로 정렬
 function matchScore(job, me) {
   let score = 0;
-  if (me.user_job_part && job.job_part === me.user_job_part) score += 2;
-  if (me.user_region && job.region.includes(me.user_region)) score += 1;
+  if (parsePrefList(me.user_job_part).includes(job.job_part)) score += 2;
+  if (parsePrefList(me.user_region).some((r) => job.region.includes(r))) score += 1;
   return score;
 }
 
@@ -25,8 +25,8 @@ function renderStats(jobs) {
 }
 
 function renderPrefs(me) {
-  document.getElementById("prefJobPart").textContent = me.user_job_part || "미설정";
-  document.getElementById("prefRegion").textContent = me.user_region || "미설정";
+  document.getElementById("prefJobPart").textContent = parsePrefList(me.user_job_part).join(", ") || "미설정";
+  document.getElementById("prefRegion").textContent = parsePrefList(me.user_region).join(", ") || "미설정";
   document.getElementById("prefCareer").textContent = me.user_personal_history || "미설정";
   document.getElementById("prefPay").textContent = me.user_pay || "미설정";
 }
